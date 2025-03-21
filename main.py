@@ -26,7 +26,11 @@ def check_eclipse(search_url):
     print("Eclipse Games Stock:", len(products))
 
 def check_swirl(search_url): # nathan
-    pass
+    page_html, status_code = get_page_html(search_url)
+
+    soup = BeautifulSoup(page_html, 'html.parser')
+    li_elements = soup.find_all('li', attrs={'data-variantAvailable': True}) # Finds all items that have a quantity > 0. IE: In stock.
+    print("Swirl YEG Stock:", len(li_elements))
 
 def check_hpw(search_url): # adam
     pass
