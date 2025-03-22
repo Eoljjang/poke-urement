@@ -6,7 +6,7 @@ import json
 # Note: Each website has a different shopify structure - so we have to have different functions for each.
 
 def check_203(search_url):
-    page_html, status_code = get_page_html(search_url)
+    page_html, status_code, page_json = get_page_html(search_url)
     if (status_code != 200):
         print("Error when requesting 203 collectibles.")
         return
@@ -16,7 +16,7 @@ def check_203(search_url):
     print("203 Collectibles Stock (use code WONG5 for 5% off):", len(products))
 
 def check_eclipse(search_url):
-    page_html, status_code = get_page_html(search_url)
+    page_html, status_code, page_json = get_page_html(search_url)
     if (status_code != 200):
         print("Error when requesting Eclipse Games.")
         return
@@ -26,14 +26,18 @@ def check_eclipse(search_url):
     print("Eclipse Games Stock:", len(products))
 
 def check_swirl(search_url): # nathan
-    page_html, status_code = get_page_html(search_url)
+    page_html, status_code, page_json = get_page_html(search_url)
 
     soup = BeautifulSoup(page_html, 'html.parser')
-    li_elements = soup.find_all('li', attrs={'data-variantAvailable': True}) # Finds all items that have a quantity > 0. IE: In stock.
-    print("Swirl YEG Stock:", len(li_elements))
+    li_elements = soup.find_all('li', attrs={'data-variantqty': True}) # Finds all items that have a quantity > 0. IE: In stock.
+    print("Swirl YEG Stock: [NOT RELIABLE]", len(li_elements))
 
 def check_hpw(search_url): # adam
-    pass
+    page_html, status_code, page_json = get_page_html(search_url)
+    
+    soup = BeautifulSoup(page_html, 'html.parser')
+    add_to_cart_btns = soup.find_all('button', string="Add to cart")
+    print("HPW Stock: [NOT RELIABLE]", len(add_to_cart_btns))
 
 def check_prisma(search_url): # adam
     pass
@@ -44,7 +48,7 @@ def check_taps(search_url): # we'll deal with this later.
 # Generic function to GET a site.
 def get_page_html(url):
     page = requests.get(url)
-    return page.content, page.status_code
+    return page.content, page.status_code, page.json
 
 def main():
     # Sample Query: 'https://203collectibles.com/search?type=product&q=ultra+ball'
